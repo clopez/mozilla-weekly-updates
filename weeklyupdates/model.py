@@ -228,6 +228,16 @@ def get_project_posts(projectname):
                    ORDER BY postdate DESC, posttime DESC''', (projectname,))
     return [Post(d) for d in cur.fetchall()]
 
+def get_project_allposts(projectname):
+    cur = get_cursor()
+    cur.execute('''SELECT userid, postdate, posttime, completed, planned, tags
+                   FROM posts
+                   WHERE exists (SELECT * from userprojects
+                                 WHERE userprojects.userid = posts.userid
+                                 AND userprojects.projectname = ?)
+                   ORDER BY postdate DESC, posttime DESC''', (projectname,))
+    return [Post(d) for d in cur.fetchall()]
+
 def get_naglist(cur):
     cur.execute('''SELECT users.userid, IFNULL(email, users.userid), MAX(postdate) AS lastpostdate
                    FROM users LEFT OUTER JOIN posts ON posts.userid = users.userid

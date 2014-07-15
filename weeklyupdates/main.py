@@ -301,6 +301,29 @@ class Root(object):
                           feedurl=cherrypy.url('/project/%s' % projectname),
                           title="Mozilla Status Board Updates: Project %s" % projectname)
 
+    @model.requires_db
+    def projectall(self, projectname):
+        cur = model.get_cursor()
+        cur.execute('''SELECT projectname FROM projects WHERE projectname = ?''',
+                    (projectname,))
+        if cur.fetchone() is None:
+            raise cherrypy.HTTPError(404, "Project not found")
+
+        users = model.get_project_users(projectname)
+        posts = model.get_project_allposts(projectname)
+        late = model.get_project_late(projectname)
+
+        return render('projectall.xhtml', projectname=projectname, users=users,
+                      posts=posts, late=late)
+
+    @model.requires_db
+    def projectallfeed(self, projectname):
+        posts = model.get_project_allposts(projectname)
+
+        return renderatom(feedposts=posts,
+                          feedurl=cherrypy.url('/project/%s/posts' % projectname),
+                          title="Igalia Status Board Updates: Project %s (All Posts)" % projectname)
+
     def markup(self):
         return render('markup.xhtml')
 
@@ -328,6 +351,8 @@ connect('/user/{userid}/teamposts/feed', 'userteampostsfeed')
 connect('/createproject', 'createproject', methods=('POST',))
 connect('/project/{projectname}', 'project')
 connect('/project/{projectname}/feed', 'projectfeed')
+connect('/project/{projectname}/posts', 'projectall')
+connect('/project/{projectname}/posts/feed', 'projectallfeed')
 connect('/markup', 'markup')
 
 def render_error(**kwargs):

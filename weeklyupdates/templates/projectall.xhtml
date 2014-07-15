@@ -5,19 +5,15 @@
   <xi:include href="common.xhtml"/>
 
   <head>
-    <title>Mozilla Status Board: Project: ${projectname}</title>
-    <link href="${genlink('project', projectname, 'feed')}" type="application/atom+xml"
-          rel="alternate" title="Project ${projectname} posts"/>
+    <title>Igalia Status Board: Project: ${projectname} (All Posts)</title>
+    <link href="${genlink('project', projectname, 'posts/feed')}" type="application/atom+xml"
+          rel="alternate" title="All project ${projectname} posts"/>
   </head>
   <body class="2col">
-    <h1>Project: ${projectname} <a href="${genlink('project', projectname, 'feed')}" class="feedlink"/></h1>
+    <h1>Project: ${projectname} <a href="${genlink('project', projectname, 'posts/feed')}" class="feedlink"/></h1>
 
     <div id="col1">
     ${postlist(posts)}
-      <br />
-      <h2><a href="${genlink('project', projectname, 'posts')}">Older Posts</a>
-        <a href="${genlink('project', projectname, 'posts/feed')}" class="feedlink"/>
-      </h2>
     </div>
 
     <div id="col2">
